@@ -21,7 +21,7 @@
     <string name="nickname">Change nickname</string>
     <string name="join_channel">Join channel</string>
     <string name="create_channel">Channel name</string>
-    <string name="leave">Leave</string>
+    <string name="leave">Leave channel</string>
     <string name="cancel">Cancel</string>
     <string name="join">Join</string>
     <string name="new_nickname">New nickname</string>
@@ -29,4 +29,7 @@
 
     <string name="message_hint">Enter a message</string>
     <string name="send">Send</string>
+
+    <string name="drawer_open">Open Navigation Drawer</string>
+    <string name="drawer_close">Close Navigation Drawer</string>
 </resources>

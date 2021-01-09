@@ -29,11 +29,6 @@
                 app:showAsAction="never">
             </item>
             <item
-                android:id="@+id/channel"
-                android:title="@string/join_channel"
-                app:showAsAction="never">
-            </item>
-            <item
                 android:id="@+id/leave"
                 android:title="@string/leave"
                 app:showAsAction="never">
@@ -42,9 +37,9 @@
     </item>
 
     <item
-        android:id="@+id/add_server"
+        android:id="@+id/add_channel"
         android:icon="@drawable/ic_add_icon"
-        android:title="@string/add_server"
+        android:title="Add channel"
         app:showAsAction="ifRoom">
     </item>
 </menu>
