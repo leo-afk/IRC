@@ -1,12 +1,11 @@
 package vn.edu.usth.ircclient.Fragments;
 
-import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,10 +16,12 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.google.android.material.tabs.TabLayout;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.Scanner;
 
 import vn.edu.usth.ircclient.Activities.MainScreenActivity;
-import vn.edu.usth.ircclient.Adapter.ChatFragmentAdapter;
 import vn.edu.usth.ircclient.R;
 
 public class ChatFragment extends Fragment {
@@ -28,6 +29,8 @@ public class ChatFragment extends Fragment {
     public ChatFragment() {
         // Required empty public constructor
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

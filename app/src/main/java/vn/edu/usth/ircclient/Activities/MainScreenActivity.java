@@ -5,35 +5,36 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 
-import org.w3c.dom.Text;
-
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import vn.edu.usth.ircclient.Adapter.ChatFragmentAdapter;
 import vn.edu.usth.ircclient.Adapter.ServerAdapter;
@@ -51,6 +52,8 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
     private ArrayList<String> servers = new ArrayList<>();
     private ActionBarDrawerToggle drawerListener;
     private ServerAdapter serverAdapter;
+    private String ServerResponse;
+    private Boolean update = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +63,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         listView = (ListView) findViewById(R.id.drawer_list);
 
         LayoutInflater inflater = getLayoutInflater();
-        ViewGroup header = (ViewGroup)inflater.inflate(R.layout.add_server_header, listView, false);
+        ViewGroup header = (ViewGroup) inflater.inflate(R.layout.add_server_header, listView, false);
         listView.addHeaderView(header, null, false);
         header.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,7 +81,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         drawerLayout.setDrawerListener(drawerListener);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 
 
         setIDs();
@@ -129,6 +131,8 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         viewPager.setCurrentItem(adapter.getCount() - 1);
     }
 
+    IRCCon ircCon = new IRCCon();
+
     private void addServer() {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.popup_add_server);
@@ -160,6 +164,20 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onClick(View v) {
                 serverAdapter.add_server_row("QuakeNet");
+                addPage("quakenet");
+                AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        try {
+                            ircCon.init();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        dialog.dismiss();
+                        return null;
+                    }
+                };
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 dialog.dismiss();
             }
         });
@@ -168,6 +186,15 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onClick(View v) {
                 serverAdapter.add_server_row("Undernet");
+                AsyncTask<Void, Void, Void> task1 = new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        ircCon.write("user kien147 0 * :Kien");
+                        ircCon.write("nick kien147");
+                        return null;
+                    }
+                };
+                task1.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 dialog.dismiss();
             }
         });
@@ -176,13 +203,69 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onClick(View v) {
                 serverAdapter.add_server_row("kottnet");
+                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.chat_screen);
+                TextView tv = new TextView(getApplicationContext());
+                tv.setTextColor(Color.parseColor("#000000"));
+                tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                tv.setLayoutParams(new ViewGroup.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                linearLayout.addView(tv);
+                Thread thread = new Thread(){
+                    @Override
+                    public void run() {
+                        try{
+                            while (update){
+                                Thread.sleep(100);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        tv.setText(ServerResponse);
+                                    }
+                                });
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                thread.start();
                 dialog.dismiss();
+
             }
         });
 
         dialog.show();
     }
 
+    public class IRCCon {
+        private PrintWriter out;
+
+        public void init() throws IOException {
+            Socket socket = new Socket("cymru.us.quakenet.org", 6667);
+            out = new PrintWriter(socket.getOutputStream(), true);
+            Scanner in = new Scanner(socket.getInputStream());
+
+            while (in.hasNext()) {
+                update = true;
+                String serverMessage = in.nextLine();
+                ServerResponse = ServerResponse + serverMessage + "\n";
+                Log.i("Dumper", "[SERVER]" + serverMessage);
+
+                if (serverMessage.startsWith("PING")) {
+                    String pingContents = serverMessage.split(" ", 2)[1];
+                    write("PONG " + pingContents);
+                }
+            }
+            in.close();
+            out.close();
+            update = false;
+        }
+
+        public void write(String fullMessage) {
+            Log.i("Writer", ">>>" + fullMessage);
+            out.print(fullMessage + "\r\n");
+            out.flush();
+        }
+    }
 
     private void addChannel() {
         Dialog dialog = new Dialog(this);
@@ -256,7 +339,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(drawerListener.onOptionsItemSelected(item)){
+        if (drawerListener.onOptionsItemSelected(item)) {
             return true;
         }
 
@@ -289,7 +372,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                 return true;
             }
 
-            case R.id.add_channel:{
+            case R.id.add_channel: {
                 addChannel();
             }
 
@@ -301,24 +384,18 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
     }
 
 
-
-
-    // Drawer stuff
-
-
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         position -= listView.getHeaderViewsCount();
-        Toast.makeText(this, servers.get(position)+" was selected", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, servers.get(position) + " was selected", Toast.LENGTH_LONG).show();
         selectItem(position);
     }
 
-    public void setTitle(String title){
+    public void setTitle(String title) {
         getSupportActionBar().setTitle(title);
     }
 
-    public void selectItem(int position){
+    public void selectItem(int position) {
         listView.setItemChecked(position, true);
         String title = (String) servers.get(position);
         setTitle(title);
