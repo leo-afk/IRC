@@ -71,6 +71,8 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                 addServer();
             }
         });
+
+
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         viewPager.setAdapter(viewPagerAdapter);
@@ -108,6 +110,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         Bundle extras = getIntent().getExtras();
         String title = extras.getString("title");
         serverAdapter.add_server_row(title);
+        addTab(title);
     }
 
     IRCCon ircCon = new IRCCon();
@@ -185,12 +188,14 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                 tv.setTextColor(Color.parseColor("#000000"));
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
                 tv.setLayoutParams(new ViewGroup.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                Thread thread = new Thread(){
+                LinearLayout linearLayout = findViewById(R.id.channel_chat);
+                linearLayout.addView(tv);
+                Thread thread = new Thread() {
                     @Override
                     public void run() {
-                        try{
-                            while (update){
-                                Thread.sleep(300);
+                        try {
+                            while (update) {
+                                Thread.sleep(500);
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {

@@ -11,6 +11,8 @@ import androidx.viewpager.widget.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import vn.edu.usth.ircclient.R;
 
@@ -29,6 +31,8 @@ public class ChannelFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_channel, container, false);
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.channel_chat);
+        return view;
     }
 }

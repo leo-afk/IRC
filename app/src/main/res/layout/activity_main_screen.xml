@@ -14,10 +14,36 @@
         android:layout_height="match_parent"
         tools:context=".Activities.MainScreenActivity">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="5dp"
+            tools:ignore="MissingConstraints">
+
+            <EditText
+                android:id="@+id/editTextTextPersonName"
+                android:layout_width="0dp"
+                android:layout_weight="8"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="text"
+                android:text="Name" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"></Button>
+        </LinearLayout>
+
         <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/view_pager">
+            tools:layout_editor_absoluteX="-16dp"
+            tools:layout_editor_absoluteY="-25dp">
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tab_layout"
@@ -38,8 +64,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="left"
         android:background="@color/white"
-        android:paddingTop="10dp">
-    </ListView>
+        android:paddingTop="10dp"></ListView>
 
 
 </androidx.drawerlayout.widget.DrawerLayout>
