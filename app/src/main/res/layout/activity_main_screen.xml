@@ -14,29 +14,20 @@
         android:layout_height="match_parent"
         tools:context=".Activities.MainScreenActivity">
 
-        <LinearLayout
+        <androidx.viewpager.widget.ViewPager
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:id="@+id/view_pager">
 
-            <LinearLayout
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_layout"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                tools:ignore="MissingConstraints">
 
-                <com.google.android.material.tabs.TabLayout
-                    android:id="@+id/channel_tab"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"></com.google.android.material.tabs.TabLayout>
+            </com.google.android.material.tabs.TabLayout>
 
-                <androidx.viewpager.widget.ViewPager
-                    android:id="@+id/chat_pager"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"></androidx.viewpager.widget.ViewPager>
-            </LinearLayout>
-
-        </LinearLayout>
+        </androidx.viewpager.widget.ViewPager>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

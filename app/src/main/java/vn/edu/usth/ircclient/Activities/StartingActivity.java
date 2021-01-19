@@ -9,8 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import vn.edu.usth.ircclient.Adapter.ChatFragmentAdapter;
-import vn.edu.usth.ircclient.Fragments.ChatFragment;
 import vn.edu.usth.ircclient.R;
 
 public class StartingActivity extends AppCompatActivity {

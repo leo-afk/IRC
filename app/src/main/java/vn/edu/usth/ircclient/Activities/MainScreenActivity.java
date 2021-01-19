@@ -7,8 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -36,13 +36,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import vn.edu.usth.ircclient.Adapter.ChatFragmentAdapter;
 import vn.edu.usth.ircclient.Adapter.ServerAdapter;
-import vn.edu.usth.ircclient.Fragments.ChatFragment;
+import vn.edu.usth.ircclient.Adapter.ViewPagerAdapter;
+import vn.edu.usth.ircclient.Fragments.ChannelFragment;
 import vn.edu.usth.ircclient.R;
 
 public class MainScreenActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
-    private ChatFragmentAdapter adapter;
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private String nickname = "AndroidUser";
@@ -54,6 +53,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
     private ServerAdapter serverAdapter;
     private String ServerResponse;
     private Boolean update = true;
+    private ViewPagerAdapter viewPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +71,12 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                 addServer();
             }
         });
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.setupWithViewPager(viewPager);
+
 
         serverAdapter = new ServerAdapter(this, servers);
         listView.setAdapter(serverAdapter);
@@ -82,8 +88,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-        setIDs();
         createFirstPage();
     }
 
@@ -104,31 +108,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         Bundle extras = getIntent().getExtras();
         String title = extras.getString("title");
         serverAdapter.add_server_row(title);
-    }
-
-    private void setIDs() {
-        adapter = new ChatFragmentAdapter(getSupportFragmentManager());
-        viewPager = (ViewPager) findViewById(R.id.chat_pager);
-        viewPager.setAdapter(adapter);
-        tabLayout = (TabLayout) findViewById(R.id.channel_tab);
-        viewPager.setOffscreenPageLimit(10);
-    }
-
-    private void addPage(String title) {
-        ChatFragment chatFragment = new ChatFragment();
-        adapter.addFragment(chatFragment, title);
-        adapter.notifyDataSetChanged();
-        if (adapter.getCount() > 0) {
-            tabLayout.setupWithViewPager(viewPager);
-        }
-        viewPager.setCurrentItem(adapter.getCount() - 1);
-    }
-
-    private void removePage() {
-        int position = viewPager.getCurrentItem();
-        adapter.removeFragment(position);
-        adapter.notifyDataSetChanged();
-        viewPager.setCurrentItem(adapter.getCount() - 1);
     }
 
     IRCCon ircCon = new IRCCon();
@@ -164,7 +143,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onClick(View v) {
                 serverAdapter.add_server_row("QuakeNet");
-                addPage("quakenet");
                 AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
                     @Override
                     protected Void doInBackground(Void... voids) {
@@ -203,18 +181,16 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onClick(View v) {
                 serverAdapter.add_server_row("kottnet");
-                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.chat_screen);
                 TextView tv = new TextView(getApplicationContext());
                 tv.setTextColor(Color.parseColor("#000000"));
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
                 tv.setLayoutParams(new ViewGroup.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                linearLayout.addView(tv);
                 Thread thread = new Thread(){
                     @Override
                     public void run() {
                         try{
                             while (update){
-                                Thread.sleep(100);
+                                Thread.sleep(300);
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -267,6 +243,13 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         }
     }
 
+    private void addTab(String title) {
+        ChannelFragment channelFragment = new ChannelFragment();
+        View view = channelFragment.getView();
+        viewPagerAdapter.addFrag(channelFragment, title);
+        viewPagerAdapter.notifyDataSetChanged();
+    }
+
     private void addChannel() {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.popup_join_channel);
@@ -282,7 +265,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                 if (channelTitle.matches("")) {
                     Toast.makeText(getApplicationContext(), "Please enter a channel", Toast.LENGTH_SHORT).show();
                 } else {
-                    addPage(channelTitle);
+                    addTab(channelTitle);
                     dialog.dismiss();
                 }
             }
@@ -368,7 +351,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             }
 
             case R.id.leave: {
-                removePage();
                 return true;
             }
 
