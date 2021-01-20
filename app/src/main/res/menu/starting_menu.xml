@@ -13,10 +13,4 @@
         android:title="@string/about"
         app:showAsAction="never">
     </item>
-
-    <item
-        android:id="@+id/exit"
-        android:title="@string/exit"
-        app:showAsAction="never">
-    </item>
 </menu>

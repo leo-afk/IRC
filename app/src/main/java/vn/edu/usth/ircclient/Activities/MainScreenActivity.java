@@ -363,12 +363,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                 return true;
             }
 
-            case R.id.exit: {
-                this.finishAffinity();
-                System.exit(0);
-                return true;
-            }
-
             case R.id.nickname: {
                 changeNickname();
                 return true;
