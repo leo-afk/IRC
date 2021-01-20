@@ -59,7 +59,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
     private ViewPagerAdapter viewPagerAdapter;
     private ChannelFragment channelFragment;
 
-    IRCCon ircCon = new IRCCon();
+    private IRCCon ircCon = new IRCCon();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +142,12 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onClick(View v) {
                 serverAdapter.add_server_row("EpiKnet");
+                AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        return null;
+                    }
+                };
                 dialog.dismiss();
             }
         });
@@ -176,6 +182,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                     protected Void doInBackground(Void... voids) {
                         ircCon.write("user kien147 0 * :Kien");
                         ircCon.write("nick kien147");
+                        ircCon.write("join #lamo");
                         return null;
                     }
                 };
@@ -289,7 +296,9 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         return nickname;
     }
 
-
+    public IRCCon getIrcCon() {
+        return ircCon;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

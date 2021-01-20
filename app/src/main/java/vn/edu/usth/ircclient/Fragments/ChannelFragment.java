@@ -1,6 +1,7 @@
 package vn.edu.usth.ircclient.Fragments;
 
 import android.media.Image;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,11 +19,11 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import vn.edu.usth.ircclient.Activities.MainScreenActivity;
+import vn.edu.usth.ircclient.Classes.IRCCon;
 import vn.edu.usth.ircclient.R;
 
 public class ChannelFragment extends Fragment {
-    private String message;
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,20 +45,29 @@ public class ChannelFragment extends Fragment {
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                message = editText.getText().toString();
-                editText.getText().clear();
-                scrollView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        scrollView.fullScroll(View.FOCUS_DOWN);
-                    }
-                });
+                String message = editText.getText().toString();
+                if (!message.matches("")) {
+                    MainScreenActivity activity = (MainScreenActivity) getActivity();
+                    IRCCon ircCon = activity.getIrcCon();
+                    editText.getText().clear();
+                    AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            ircCon.write(message);
+                            return null;
+                        }
+                    };
+
+                    scrollView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            scrollView.fullScroll(View.FOCUS_DOWN);
+                        }
+                    });
+                }
             }
         });
         return view;
     }
 
-    public String getMessage() {
-        return message;
-    }
 }
