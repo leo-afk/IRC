@@ -12,11 +12,6 @@
         app:showAsAction="never"></item>
 
     <item
-        android:id="@+id/exit"
-        android:title="@string/exit"
-        app:showAsAction="never"></item>
-
-    <item
         android:id="@+id/more"
         android:icon="@drawable/ic_more_icon"
         android:title="@string/more"
@@ -26,13 +21,11 @@
             <item
                 android:id="@+id/nickname"
                 android:title="@string/nickname"
-                app:showAsAction="never">
-            </item>
+                app:showAsAction="never"></item>
             <item
                 android:id="@+id/leave"
                 android:title="@string/leave"
-                app:showAsAction="never">
-            </item>
+                app:showAsAction="never"></item>
         </menu>
     </item>
 
@@ -40,6 +33,5 @@
         android:id="@+id/add_channel"
         android:icon="@drawable/ic_add_icon"
         android:title="Add channel"
-        app:showAsAction="ifRoom">
-    </item>
+        app:showAsAction="ifRoom"></item>
 </menu>

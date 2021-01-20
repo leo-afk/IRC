@@ -97,11 +97,6 @@ public class StartingActivity extends AppCompatActivity {
                 return true;
             }
 
-            case R.id.exit: {
-                this.finishAffinity();
-                System.exit(0);
-                return true;
-            }
             default: {
                 super.onOptionsItemSelected(item);
             }

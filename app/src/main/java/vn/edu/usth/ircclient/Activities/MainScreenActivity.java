@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
@@ -41,6 +42,7 @@ import java.util.TimerTask;
 
 import vn.edu.usth.ircclient.Adapter.ServerAdapter;
 import vn.edu.usth.ircclient.Adapter.ViewPagerAdapter;
+import vn.edu.usth.ircclient.Classes.IRCCon;
 import vn.edu.usth.ircclient.Fragments.ChannelFragment;
 import vn.edu.usth.ircclient.R;
 
@@ -54,9 +56,10 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
     private ArrayList<String> servers = new ArrayList<>();
     private ActionBarDrawerToggle drawerListener;
     private ServerAdapter serverAdapter;
-    private String ServerResponse;
-    private Boolean update = true;
     private ViewPagerAdapter viewPagerAdapter;
+    private ChannelFragment channelFragment;
+
+    IRCCon ircCon = new IRCCon();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,8 +118,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         serverAdapter.add_server_row(title);
         addTab(title);
     }
-
-    IRCCon ircCon = new IRCCon();
 
     private void addServer() {
         Dialog dialog = new Dialog(this);
@@ -189,36 +190,17 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                 serverAdapter.add_server_row("kottnet");
                 TextView tv = new TextView(getApplicationContext());
                 tv.setTextColor(Color.parseColor("#000000"));
-                tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
                 tv.setLayoutParams(new ViewGroup.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-                ScrollView scrollView = findViewById(R.id.channel_chat);
+                ScrollView scrollView = findViewById(R.id.scroll_screen);
                 scrollView.addView(tv);
-//                Thread thread = new Thread() {
-//                    @Override
-//                    public void run() {
-//                        try {
-//                            while (update) {
-//                                sleep(500);
-//                                runOnUiThread(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        tv.setText(ServerResponse);
-//                                    }
-//                                });
-//                            }
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                };
-//                thread.start();
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                tv.setText(ServerResponse);
+                                tv.setText(IRCCon.getServerResponse());
                             }
 
                             ;
@@ -231,37 +213,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         });
 
         dialog.show();
-    }
-
-    public class IRCCon {
-        private PrintWriter out;
-
-        public void init() throws IOException {
-            Socket socket = new Socket("cymru.us.quakenet.org", 6667);
-            out = new PrintWriter(socket.getOutputStream(), true);
-            Scanner in = new Scanner(socket.getInputStream());
-
-            while (in.hasNext()) {
-                update = true;
-                String serverMessage = in.nextLine();
-                ServerResponse = ServerResponse + serverMessage + "\n";
-                Log.i("Dumper", "[SERVER]" + serverMessage);
-
-                if (serverMessage.startsWith("PING")) {
-                    String pingContents = serverMessage.split(" ", 2)[1];
-                    write("PONG " + pingContents);
-                }
-            }
-            in.close();
-            out.close();
-            update = false;
-        }
-
-        public void write(String fullMessage) {
-            Log.i("Writer", ">>>" + fullMessage);
-            out.print(fullMessage + "\r\n");
-            out.flush();
-        }
     }
 
     private ArrayList<String> ChannelList = new ArrayList<>();
@@ -337,6 +288,8 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
     public String getNickname() {
         return nickname;
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

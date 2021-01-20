@@ -1,17 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/chat_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.ChannelFragment"
-    android:id="@+id/channel_frag">
+    android:orientation="vertical"
+    tools:context=".Fragments.ChatFragment">
 
     <ScrollView
+        android:id="@+id/scroll_screen"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/channel_chat"
-        android:orientation="vertical">
-
+        android:layout_height="0dp"
+        android:layout_weight="1">
     </ScrollView>
 
-</FrameLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/orange"></View>
+
+
+    <LinearLayout
+        android:id="@+id/chatbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/edittext_chatbox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:hint="@string/message_hint"
+            android:maxLines="6"></EditText>
+
+        <ImageButton
+            android:id="@+id/send_button"
+            android:layout_width="64dp"
+            android:layout_height="48dp"
+            android:layout_gravity="bottom"
+            android:background="?attr/selectableItemBackground"
+            android:src="@drawable/ic_send_icon"></ImageButton>
+    </LinearLayout>
+</LinearLayout>
