@@ -57,6 +57,7 @@ public class ChannelFragment extends Fragment {
                             return null;
                         }
                     };
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
                     scrollView.post(new Runnable() {
                         @Override

@@ -142,12 +142,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onClick(View v) {
                 serverAdapter.add_server_row("EpiKnet");
-                AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        return null;
-                    }
-                };
                 dialog.dismiss();
             }
         });
@@ -182,7 +176,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                     protected Void doInBackground(Void... voids) {
                         ircCon.write("user kien147 0 * :Kien");
                         ircCon.write("nick kien147");
-                        ircCon.write("join #lamo");
                         return null;
                     }
                 };
