@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import vn.edu.usth.ircclient.Adapter.ServerAdapter;
 import vn.edu.usth.ircclient.Adapter.ViewPagerAdapter;
@@ -187,28 +190,41 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                 TextView tv = new TextView(getApplicationContext());
                 tv.setTextColor(Color.parseColor("#000000"));
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-                tv.setLayoutParams(new ViewGroup.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                LinearLayout linearLayout = findViewById(R.id.channel_chat);
-                linearLayout.addView(tv);
-                Thread thread = new Thread() {
+                tv.setLayoutParams(new ViewGroup.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+                ScrollView scrollView = findViewById(R.id.channel_chat);
+                scrollView.addView(tv);
+//                Thread thread = new Thread() {
+//                    @Override
+//                    public void run() {
+//                        try {
+//                            while (update) {
+//                                sleep(500);
+//                                runOnUiThread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        tv.setText(ServerResponse);
+//                                    }
+//                                });
+//                            }
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                };
+//                thread.start();
+                new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        try {
-                            while (update) {
-                                Thread.sleep(500);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        tv.setText(ServerResponse);
-                                    }
-                                });
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tv.setText(ServerResponse);
                             }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+
+                            ;
+                        });
                     }
-                };
-                thread.start();
+                }, 0, 1000);//1000 is a Refreshing Time (1second)
                 dialog.dismiss();
 
             }
@@ -248,11 +264,14 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         }
     }
 
+    private ArrayList<String> ChannelList = new ArrayList<>();
     private void addTab(String title) {
         ChannelFragment channelFragment = new ChannelFragment();
         View view = channelFragment.getView();
         viewPagerAdapter.addFrag(channelFragment, title);
         viewPagerAdapter.notifyDataSetChanged();
+        ChannelList.add(title);
+        viewPager.setOffscreenPageLimit(ChannelList.size());
     }
 
     private void addChannel() {

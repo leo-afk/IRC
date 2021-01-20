@@ -6,13 +6,12 @@
     tools:context=".Fragments.ChannelFragment"
     android:id="@+id/channel_frag">
 
-    <!-- TODO: Update blank fragment layout -->
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/channel_chat"
         android:orientation="vertical">
 
-    </LinearLayout>
+    </ScrollView>
 
 </FrameLayout>
