@@ -1,6 +1,7 @@
 package vn.edu.usth.ircclient.Classes;
 
 import android.util.Log;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -45,4 +46,5 @@ public class IRCCon {
             out.flush();
         }
     }
+
 }

@@ -14,6 +14,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ import com.google.android.material.tabs.TabLayout;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Timer;
@@ -49,7 +51,6 @@ import vn.edu.usth.ircclient.R;
 public class MainScreenActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     private ViewPager viewPager;
     private TabLayout tabLayout;
-
     private DrawerLayout drawerLayout;
     private ListView listView;
     private ArrayList<String> servers = new ArrayList<>();
@@ -283,6 +284,25 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                } else {
                    Toast.makeText(getApplicationContext(), "Please fill all the fields!", Toast.LENGTH_SHORT).show();
                }
+
+                TextView textView = new TextView(getApplicationContext());
+                textView.setTextColor(Color.parseColor("#000000"));
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+                textView.setLayoutParams(new ViewGroup.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+                ScrollView scrollView = (ScrollView) findViewById(R.id.scroll_screen);
+                scrollView.addView(textView);
+
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                textView.setText(ircCon.getServerResponse());
+                            }
+                        });
+                    }
+                }, 0, 1000);
             }
         });
 
