@@ -12,8 +12,9 @@ public class IRCCon {
     private Boolean update = true;
     private static String serverResponse;
 
-    public void init() throws IOException {
-        Socket socket = new Socket("cymru.us.quakenet.org", 6667);
+    public void init(String host) throws IOException {
+        Socket socket = new Socket(host, 6667);
+
         out = new PrintWriter(socket.getOutputStream(), true);
         Scanner in = new Scanner(socket.getInputStream());
 
@@ -38,8 +39,10 @@ public class IRCCon {
     }
 
     public void write(String fullMessage) {
-        Log.i("Writer", ">>>" + fullMessage);
-        out.print(fullMessage + "\r\n");
-        out.flush();
+        if (out != null) {
+            Log.i("Writer", ">>>" + fullMessage);
+            out.print(fullMessage + "\r\n");
+            out.flush();
+        }
     }
 }

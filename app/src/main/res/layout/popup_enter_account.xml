@@ -5,46 +5,67 @@
     android:layout_gravity="center">
 
     <TextView
-        android:id="@+id/new_nickname"
+        android:id="@+id/nickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/popup_join_channel_padding_left"
         android:paddingTop="@dimen/popup_join_channel_padding_top"
         android:paddingRight="@dimen/popup_join_channel_padding_right"
-        android:text="@string/new_nickname"
+        android:text="Login"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"></TextView>
 
     <EditText
-        android:id="@+id/input_nickname"
+        android:id="@+id/edit_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/new_nickname"
+        android:layout_below="@+id/nickname"
         android:layout_marginLeft="@dimen/popup_join_channel_padding_left"
         android:layout_marginRight="@dimen/popup_join_channel_padding_right"
+        android:hint="Enter your username here"
+        android:textColor="@color/black"></EditText>
+
+    <EditText
+        android:id="@+id/edit_nickname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edit_username"
+        android:layout_marginLeft="@dimen/popup_join_channel_padding_left"
+        android:layout_marginRight="@dimen/popup_join_channel_padding_right"
+        android:hint="Enter your nickname here"
+        android:textColor="@color/black"></EditText>
+
+    <EditText
+        android:id="@+id/edit_realname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edit_nickname"
+        android:layout_marginLeft="@dimen/popup_join_channel_padding_left"
+        android:layout_marginRight="@dimen/popup_join_channel_padding_right"
+        android:hint="Enter your nickname here"
         android:textColor="@color/black"></EditText>
 
     <TextView
-        android:id="@+id/change_nickname"
+        android:id="@+id/enter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/input_nickname"
+        android:layout_below="@+id/edit_realname"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:background="?attr/selectableItemBackground"
         android:padding="@dimen/popup_join_channel_button_padding"
-        android:text="@string/change"
+        android:text="Enter"
         android:textColor="@color/orange"
         android:textSize="@dimen/popup_join_channel_button_text_size"
         android:textStyle="bold"></TextView>
 
     <TextView
-        android:id="@+id/cancel_change_nickname"
+        android:id="@+id/cancel_enter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/input_nickname"
-        android:layout_toLeftOf="@+id/change_nickname"
+        android:layout_below="@+id/edit_realname"
+        android:layout_toLeftOf="@+id/enter"
         android:background="?attr/selectableItemBackground"
         android:padding="@dimen/popup_join_channel_button_padding"
         android:text="@string/cancel"

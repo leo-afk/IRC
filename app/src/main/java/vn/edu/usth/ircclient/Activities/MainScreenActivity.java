@@ -49,7 +49,6 @@ import vn.edu.usth.ircclient.R;
 public class MainScreenActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     private ViewPager viewPager;
     private TabLayout tabLayout;
-    private String nickname = "AndroidUser";
 
     private DrawerLayout drawerLayout;
     private ListView listView;
@@ -117,6 +116,29 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         String title = extras.getString("title");
         serverAdapter.add_server_row(title);
         addTab(title);
+
+        String host = null;
+        switch (title) {
+            case "QuakeNet":
+                host = "cymru.us.quakenet.org";
+                break;
+            case "freenode":
+                host = "chat.freenode.net";
+                break;
+            case "EpiKnet":
+                host = "irc.epiknet.org";
+                break;
+            case "UnderNet":
+                host = "irc.undernet.org";
+                break;
+
+            case "KottNet":
+                host = "alice.kottnet.net";
+                break;
+        }
+
+        connectServer(host);
+        enterAccount(ircCon);
     }
 
     private void addServer() {
@@ -150,19 +172,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onClick(View v) {
                 serverAdapter.add_server_row("QuakeNet");
-                AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        try {
-                            ircCon.init();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        dialog.dismiss();
-                        return null;
-                    }
-                };
-                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 dialog.dismiss();
             }
         });
@@ -171,15 +180,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onClick(View v) {
                 serverAdapter.add_server_row("Undernet");
-                AsyncTask<Void, Void, Void> task1 = new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        ircCon.write("user kien147 0 * :Kien");
-                        ircCon.write("nick kien147");
-                        return null;
-                    }
-                };
-                task1.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 dialog.dismiss();
             }
         });
@@ -188,34 +188,30 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onClick(View v) {
                 serverAdapter.add_server_row("kottnet");
-                TextView tv = new TextView(getApplicationContext());
-                tv.setTextColor(Color.parseColor("#000000"));
-                tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-                tv.setLayoutParams(new ViewGroup.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-                ScrollView scrollView = findViewById(R.id.scroll_screen);
-                scrollView.addView(tv);
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                tv.setText(IRCCon.getServerResponse());
-                            }
-
-                            ;
-                        });
-                    }
-                }, 0, 1000);//1000 is a Refreshing Time (1second)
                 dialog.dismiss();
-
             }
         });
 
         dialog.show();
     }
 
+    public void connectServer(String host) {
+        AsyncTask<Void, Void, Void> connect_task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                try {
+                    ircCon.init(host);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        connect_task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
     private ArrayList<String> ChannelList = new ArrayList<>();
+
     private void addTab(String title) {
         ChannelFragment channelFragment = new ChannelFragment();
         View view = channelFragment.getView();
@@ -255,38 +251,48 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         dialog.show();
     }
 
-    private void changeNickname() {
+    private void enterAccount(IRCCon ircCon) {
         Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.popup_change_nickname);
+        dialog.setContentView(R.layout.popup_enter_account);
 
-        TextView cancel = (TextView) dialog.findViewById(R.id.cancel_change_nickname);
-        TextView change = (TextView) dialog.findViewById(R.id.change_nickname);
-        EditText editNickname = (EditText) dialog.findViewById(R.id.input_nickname);
+        TextView cancel = (TextView) dialog.findViewById(R.id.cancel_enter);
+        TextView enter = (TextView) dialog.findViewById(R.id.enter);
+        EditText editUsername = (EditText) dialog.findViewById(R.id.edit_username);
+        EditText editNickname = (EditText) dialog.findViewById(R.id.edit_nickname);
+        EditText editRealname = (EditText) dialog.findViewById(R.id.edit_realname);
+        dialog.show();
 
-        change.setOnClickListener(new View.OnClickListener() {
+        enter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nicknameTemp = editNickname.getText().toString();
-                if (nicknameTemp.matches("")) {
-                    Toast.makeText(getApplicationContext(), "Please enter a username", Toast.LENGTH_SHORT).show();
-                } else {
-                    nickname = nicknameTemp;
-                    dialog.dismiss();
-                }
+               String username = editUsername.getText().toString();
+               String nickname = editNickname.getText().toString();
+               String realname = editRealname.getText().toString();
+               if (!username.matches("") && !nickname.matches("") && !realname.matches("")) {
+                   AsyncTask<Void, Void, Void> init_account = new AsyncTask<Void, Void, Void>() {
+                       @Override
+                       protected Void doInBackground(Void... voids) {
+                           Log.i("kien", username + nickname + realname);
+                           ircCon.write("user " + username + " 0 * :" + realname);
+                           ircCon.write("nick " + nickname);
+                           return null;
+                       }
+                   };
+                   init_account.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                   dialog.dismiss();
+               } else {
+                   Toast.makeText(getApplicationContext(), "Please fill all the fields!", Toast.LENGTH_SHORT).show();
+               }
             }
         });
 
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ircCon.write("quit");
                 dialog.dismiss();
             }
         });
-        dialog.show();
-    }
-
-    public String getNickname() {
-        return nickname;
     }
 
     public IRCCon getIrcCon() {
@@ -319,7 +325,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             }
 
             case R.id.nickname: {
-                changeNickname();
                 return true;
             }
 
