@@ -43,7 +43,7 @@
         android:layout_below="@id/edit_nickname"
         android:layout_marginLeft="@dimen/popup_join_channel_padding_left"
         android:layout_marginRight="@dimen/popup_join_channel_padding_right"
-        android:hint="Enter your nickname here"
+        android:hint="Enter your realname here"
         android:textColor="@color/black"></EditText>
 
     <TextView

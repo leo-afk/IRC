@@ -5,47 +5,47 @@
     android:layout_gravity="center">
 
     <TextView
-        android:id="@+id/channel_name"
+        android:id="@+id/change_nickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/popup_join_channel_padding_left"
         android:paddingTop="@dimen/popup_join_channel_padding_top"
         android:paddingRight="@dimen/popup_join_channel_padding_right"
-        android:text="@string/create_channel"
+        android:text="Change nickname"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"></TextView>
 
     <EditText
-        android:id="@+id/input_channel"
+        android:id="@+id/input_change_nickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/channel_name"
+        android:layout_below="@+id/change_nickname"
         android:layout_marginLeft="@dimen/popup_join_channel_padding_left"
         android:layout_marginRight="@dimen/popup_join_channel_padding_right"
         android:textColor="@color/black"
-        android:hint="e.g. #lmao"></EditText>
+        android:hint="New nickname"></EditText>
 
     <TextView
-        android:id="@+id/join_channel"
+        android:id="@+id/change_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/input_channel"
+        android:layout_below="@+id/input_change_nickname"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:background="?attr/selectableItemBackground"
         android:padding="@dimen/popup_join_channel_button_padding"
-        android:text="@string/join"
+        android:text="Change"
         android:textColor="@color/orange"
         android:textSize="@dimen/popup_join_channel_button_text_size"
         android:textStyle="bold"></TextView>
 
     <TextView
-        android:id="@+id/cancel_join_channel"
+        android:id="@+id/cancel_change_nickname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/input_channel"
-        android:layout_toLeftOf="@+id/join_channel"
+        android:layout_below="@+id/input_change_nickname"
+        android:layout_toLeftOf="@+id/change_button"
         android:background="?attr/selectableItemBackground"
         android:padding="@dimen/popup_join_channel_button_padding"
         android:text="@string/cancel"

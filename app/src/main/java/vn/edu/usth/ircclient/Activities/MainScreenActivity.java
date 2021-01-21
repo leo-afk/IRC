@@ -9,6 +9,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -42,6 +43,8 @@ import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.xml.transform.sax.TemplatesHandler;
+
 import vn.edu.usth.ircclient.Adapter.ServerAdapter;
 import vn.edu.usth.ircclient.Adapter.ViewPagerAdapter;
 import vn.edu.usth.ircclient.Classes.IRCCon;
@@ -58,8 +61,8 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
     private ServerAdapter serverAdapter;
     private ViewPagerAdapter viewPagerAdapter;
     private ChannelFragment channelFragment;
-
     private IRCCon ircCon = new IRCCon();
+//    ArrayList<IRCCon> Connections = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -238,6 +241,14 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                     Toast.makeText(getApplicationContext(), "Please enter a channel", Toast.LENGTH_SHORT).show();
                 } else {
                     addTab(channelTitle);
+                    AsyncTask<Void, Void, Void> channel_task = new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            ircCon.write("join " + channelTitle);
+                            return null;
+                        }
+                    };
+                    channel_task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     dialog.dismiss();
                 }
             }
@@ -281,38 +292,44 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                    };
                    init_account.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                    dialog.dismiss();
+                   dump();
+
                } else {
                    Toast.makeText(getApplicationContext(), "Please fill all the fields!", Toast.LENGTH_SHORT).show();
                }
 
-                TextView textView = new TextView(getApplicationContext());
-                textView.setTextColor(Color.parseColor("#000000"));
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-                textView.setLayoutParams(new ViewGroup.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-                ScrollView scrollView = (ScrollView) findViewById(R.id.scroll_screen);
-                scrollView.addView(textView);
 
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                textView.setText(ircCon.getServerResponse());
-                            }
-                        });
-                    }
-                }, 0, 1000);
             }
         });
 
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ircCon.write("quit");
                 dialog.dismiss();
+                dump();
             }
         });
+    }
+
+    private void dump() {
+        TextView textView = new TextView(getApplicationContext());
+        textView.setTextColor(Color.parseColor("#000000"));
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        textView.setLayoutParams(new ViewGroup.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        ScrollView scrollView = (ScrollView) findViewById(R.id.scroll_screen);
+        scrollView.addView(textView);
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        textView.setText(ircCon.getServerResponse());
+                    }
+                });
+            }
+        }, 0, 1000);
     }
 
     public IRCCon getIrcCon() {
@@ -345,10 +362,40 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             }
 
             case R.id.nickname: {
-                return true;
-            }
+                Dialog dialog = new Dialog(this);
+                dialog.setContentView(R.layout.popup_change_nickname);
 
-            case R.id.leave: {
+                TextView cancel = (TextView) dialog.findViewById(R.id.cancel_change_nickname);
+                TextView change = (TextView) dialog.findViewById(R.id.change_button);
+                EditText editNickname = (EditText) dialog.findViewById(R.id.input_change_nickname);
+                dialog.show();
+
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                change.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String new_nick = editNickname.getText().toString();
+                        if (!new_nick.matches("")) {
+                            AsyncTask<Void, Void, Void> nickname_task = new AsyncTask<Void, Void, Void>() {
+                                @Override
+                                protected Void doInBackground(Void... voids) {
+                                    ircCon.write("nick " + new_nick);
+                                    return null;
+                                }
+                            };
+                            nickname_task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                            dialog.dismiss();
+                        } else {
+                            Toast.makeText(MainScreenActivity.this, "Please enter a nickname.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
                 return true;
             }
 
