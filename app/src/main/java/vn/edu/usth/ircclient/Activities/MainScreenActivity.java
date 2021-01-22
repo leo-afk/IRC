@@ -220,6 +220,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
 
     private void addTab(String title) {
         ChannelFragment channelFragment = new ChannelFragment();
+        channelFragment.setTitle(title);
         View view = channelFragment.getView();
         viewPagerAdapter.addFrag(channelFragment, title);
         viewPagerAdapter.notifyDataSetChanged();
@@ -301,7 +302,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                     };
                     init_account.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     dialog.dismiss();
-                    dump();
 
                 } else {
                     Toast.makeText(getApplicationContext(), "Please fill all the fields!", Toast.LENGTH_SHORT).show();
@@ -315,35 +315,9 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                dump();
             }
         });
     }
-
-    private void dump() {
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.linear_in_scroll);
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String response = ircCon.getServerResponse();
-                        if (!response.matches("")) {
-                            TextView textView = new TextView(getApplicationContext());
-                            textView.setTextColor(Color.parseColor("#000000"));
-                            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-                            textView.setLayoutParams(new ViewGroup.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-                            linearLayout.addView(textView);
-                            textView.setText(response);
-                            ircCon.setServerResponseToZero();
-                        }
-                    }
-                });
-            }
-        }, 0, 1000);
-    }
-
 
     public IRCCon getIrcCon() {
         return ircCon;

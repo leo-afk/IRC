@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class IRCCon {
     private PrintWriter out;
     private Boolean update = true;
-    private static String serverResponse;
+    private static String serverResponse = "";
     private static HashMap<String, String> ChannelMap = new HashMap<>();
 
     public void init(String host) throws IOException {
