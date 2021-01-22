@@ -121,7 +121,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         Bundle extras = getIntent().getExtras();
         String title = extras.getString("title");
         serverAdapter.add_server_row(title);
-        addTab(title);
+        addTab("Server");
 
         String host = null;
         switch (title) {

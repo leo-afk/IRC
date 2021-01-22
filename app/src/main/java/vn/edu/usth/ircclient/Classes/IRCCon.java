@@ -13,7 +13,6 @@ import java.util.Scanner;
 public class IRCCon {
     private PrintWriter out;
     private Boolean update = true;
-    private static String serverResponse = "";
     private static HashMap<String, String> ChannelMap = new HashMap<>();
 
     public void init(String host) throws IOException {
@@ -25,13 +24,15 @@ public class IRCCon {
         while (in.hasNext()) {
             String serverMessage = in.nextLine();
             if (serverMessage.contains("PRIVMSG #")) {
+                Log.i("THIS", serverMessage);
                 String channelName = serverMessage.split(" ")[2];
                 String channelText = serverMessage.split(" ", 4)[3];
+                String user = serverMessage.split(":")[1].split("!")[0];
                 if (ChannelMap.containsKey(channelName)) {
-                    ChannelMap.put(channelName, ChannelMap.get(channelName) + channelText + "\n");
+                    ChannelMap.put(channelName, ChannelMap.get(channelName) + user + ": " + channelText + "\n");
                     Log.i(channelName, ChannelMap.get(channelName));
                 } else {
-                    ChannelMap.put(channelName, channelText);
+                    ChannelMap.put(channelName, user + ": " + channelText);
                     Log.i(channelName + "init", ChannelMap.get(channelName) + "\n");
                 }
             } else if (serverMessage.contains("JOIN #")) {
@@ -57,9 +58,11 @@ public class IRCCon {
             } else if (serverMessage.startsWith("PING")) {
                 String pingContents = serverMessage.split(" ", 2)[1];
                 write("PONG " + pingContents);
-            } else {
-                serverResponse = serverResponse + serverMessage + "\n";
+            } else if (ChannelMap.containsKey("Server")) {
+                ChannelMap.put("Server", ChannelMap.get("Server") + serverMessage + "\n");
                 Log.i("Dumper", "[SERVER]" + serverMessage);
+            } else {
+                ChannelMap.put("Server", serverMessage);
             }
 
         }
@@ -67,17 +70,10 @@ public class IRCCon {
         out.close();
     }
 
-    public static String getServerResponse() {
-        return serverResponse;
-    }
-
     public static HashMap getChannelMap() {
         return ChannelMap;
     }
 
-    public void setServerResponseToZero() {
-        serverResponse = "";
-    }
 
     public void write(String fullMessage) {
         if (out != null) {

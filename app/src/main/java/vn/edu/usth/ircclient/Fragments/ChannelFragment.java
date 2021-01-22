@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -30,6 +31,7 @@ import vn.edu.usth.ircclient.R;
 
 public class ChannelFragment extends Fragment {
     private String title;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +52,7 @@ public class ChannelFragment extends Fragment {
         ScrollView scrollView = (ScrollView) view.findViewById(R.id.scroll_screen);
         MainScreenActivity activity = (MainScreenActivity) getActivity();
         IRCCon ircCon = activity.getIrcCon();
-        dump(ircCon, linearLayout);
+        dump(ircCon, linearLayout, ircCon.getChannelMap());
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,7 +73,8 @@ public class ChannelFragment extends Fragment {
 
                     linearLayout.post(new Runnable() {
                         @Override
-                        public void run() {scrollView.fullScroll(View.FOCUS_DOWN);
+                        public void run() {
+                            scrollView.fullScroll(View.FOCUS_DOWN);
                         }
                     });
                 }
@@ -80,17 +83,19 @@ public class ChannelFragment extends Fragment {
         return view;
     }
 
-    private void dump(IRCCon ircCon, LinearLayout linearLayout) {
+    private void dump(IRCCon ircCon, LinearLayout linearLayout, HashMap channelMap) {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        String response = ircCon.getServerResponse();
-                        if (!response.matches("")) {
-                            addNewTextView(response, linearLayout);
-                            ircCon.setServerResponseToZero();
+                        String response = (String) channelMap.get(title);
+                        if (response != null) {
+                            if (!response.matches("")) {
+                                addNewTextView(response, linearLayout);
+                                channelMap.put(title, "");
+                            }
                         }
                     }
                 });
