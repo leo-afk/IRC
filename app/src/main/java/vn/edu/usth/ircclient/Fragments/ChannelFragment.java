@@ -1,6 +1,6 @@
 package vn.edu.usth.ircclient.Fragments;
 
-import android.media.Image;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 

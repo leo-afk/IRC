@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.Dialog;
@@ -37,6 +38,7 @@ import com.google.android.material.tabs.TabLayout;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.channels.Channel;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -223,6 +225,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         viewPagerAdapter.notifyDataSetChanged();
         ChannelList.add(title);
         viewPager.setOffscreenPageLimit(ChannelList.size());
+        viewPager.setCurrentItem(viewPagerAdapter.getCount() - 1);
     }
 
     private void addChannel() {
@@ -239,6 +242,10 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                 String channelTitle = editChannel.getText().toString();
                 if (channelTitle.matches("")) {
                     Toast.makeText(getApplicationContext(), "Please enter a channel", Toast.LENGTH_SHORT).show();
+                } else if (!channelTitle.startsWith("#")) {
+                    Toast.makeText(MainScreenActivity.this, "Channel name must start with #", Toast.LENGTH_SHORT).show();
+                } else if (channelTitle.contains(" ")) {
+                    Toast.makeText(MainScreenActivity.this, "Channel name must not have spaces", Toast.LENGTH_SHORT).show();
                 } else {
                     addTab(channelTitle);
                     AsyncTask<Void, Void, Void> channel_task = new AsyncTask<Void, Void, Void>() {
@@ -250,6 +257,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                     };
                     channel_task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     dialog.dismiss();
+                    Toast.makeText(MainScreenActivity.this, "Joined " + channelTitle, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -262,6 +270,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         });
         dialog.show();
     }
+
 
     private void enterAccount(IRCCon ircCon) {
         Dialog dialog = new Dialog(this);
@@ -277,26 +286,26 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         enter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               String username = editUsername.getText().toString();
-               String nickname = editNickname.getText().toString();
-               String realname = editRealname.getText().toString();
-               if (!username.matches("") && !nickname.matches("") && !realname.matches("")) {
-                   AsyncTask<Void, Void, Void> init_account = new AsyncTask<Void, Void, Void>() {
-                       @Override
-                       protected Void doInBackground(Void... voids) {
-                           Log.i("kien", username + nickname + realname);
-                           ircCon.write("user " + username + " 0 * :" + realname);
-                           ircCon.write("nick " + nickname);
-                           return null;
-                       }
-                   };
-                   init_account.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                   dialog.dismiss();
-                   dump();
+                String username = editUsername.getText().toString();
+                String nickname = editNickname.getText().toString();
+                String realname = editRealname.getText().toString();
+                if (!username.matches("") && !nickname.matches("") && !realname.matches("")) {
+                    AsyncTask<Void, Void, Void> init_account = new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            Log.i("kien", username + nickname + realname);
+                            ircCon.write("user " + username + " 0 * :" + realname);
+                            ircCon.write("nick " + nickname);
+                            return null;
+                        }
+                    };
+                    init_account.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    dialog.dismiss();
+                    dump();
 
-               } else {
-                   Toast.makeText(getApplicationContext(), "Please fill all the fields!", Toast.LENGTH_SHORT).show();
-               }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please fill all the fields!", Toast.LENGTH_SHORT).show();
+                }
 
 
             }
@@ -318,7 +327,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         textView.setLayoutParams(new ViewGroup.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         ScrollView scrollView = (ScrollView) findViewById(R.id.scroll_screen);
         scrollView.addView(textView);
-
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
@@ -331,6 +339,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             }
         }, 0, 1000);
     }
+
 
     public IRCCon getIrcCon() {
         return ircCon;
