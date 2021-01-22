@@ -75,6 +75,10 @@ public class IRCCon {
         return ChannelMap;
     }
 
+    public void setServerResponseToZero() {
+        serverResponse = "";
+    }
+
     public void write(String fullMessage) {
         if (out != null) {
             Log.i("Writer", ">>>" + fullMessage);

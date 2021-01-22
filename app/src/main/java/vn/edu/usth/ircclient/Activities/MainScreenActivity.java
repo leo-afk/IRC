@@ -321,19 +321,23 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
     }
 
     private void dump() {
-        TextView textView = new TextView(getApplicationContext());
-        textView.setTextColor(Color.parseColor("#000000"));
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        textView.setLayoutParams(new ViewGroup.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-        ScrollView scrollView = (ScrollView) findViewById(R.id.scroll_screen);
-        scrollView.addView(textView);
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.linear_in_scroll);
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        textView.setText(ircCon.getServerResponse());
+                        String response = ircCon.getServerResponse();
+                        if (!response.matches("")) {
+                            TextView textView = new TextView(getApplicationContext());
+                            textView.setTextColor(Color.parseColor("#000000"));
+                            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+                            textView.setLayoutParams(new ViewGroup.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+                            linearLayout.addView(textView);
+                            textView.setText(response);
+                            ircCon.setServerResponseToZero();
+                        }
                     }
                 });
             }

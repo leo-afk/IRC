@@ -41,6 +41,7 @@ public class ChannelFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_channel, container, false);
         EditText editText = (EditText) view.findViewById(R.id.edittext_chatbox);
         ImageButton imageButton = (ImageButton) view.findViewById(R.id.send_button);
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.linear_in_scroll);
         ScrollView scrollView = (ScrollView) view.findViewById(R.id.scroll_screen);
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,6 +50,7 @@ public class ChannelFragment extends Fragment {
                 if (!message.matches("")) {
                     MainScreenActivity activity = (MainScreenActivity) getActivity();
                     IRCCon ircCon = activity.getIrcCon();
+
                     editText.getText().clear();
                     AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
                         @Override
@@ -59,10 +61,9 @@ public class ChannelFragment extends Fragment {
                     };
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-                    scrollView.post(new Runnable() {
+                    linearLayout.post(new Runnable() {
                         @Override
-                        public void run() {
-                            scrollView.fullScroll(View.FOCUS_DOWN);
+                        public void run() {scrollView.fullScroll(View.FOCUS_DOWN);
                         }
                     });
                 }
