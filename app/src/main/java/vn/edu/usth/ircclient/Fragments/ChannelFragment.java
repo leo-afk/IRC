@@ -52,38 +52,30 @@ public class ChannelFragment extends Fragment {
         ScrollView scrollView = (ScrollView) view.findViewById(R.id.scroll_screen);
         MainScreenActivity activity = (MainScreenActivity) getActivity();
         IRCCon ircCon = activity.getIrcCon();
-        dump(ircCon, linearLayout, ircCon.getChannelMap());
+        dump(ircCon, linearLayout, ircCon.getChannelMap(), scrollView);
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String message = editText.getText().toString();
+                editText.getText().clear();
                 if (!message.matches("")) {
-                    String display = ircCon.getNickName() + ": " + message;
-                    addNewTextView(display, linearLayout);
-                    String send = "privmsg " + title + " " + message;
-                    editText.getText().clear();
-                    AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Void... voids) {
-                            ircCon.write(send);
-                            return null;
-                        }
-                    };
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-                    linearLayout.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            scrollView.fullScroll(View.FOCUS_DOWN);
-                        }
-                    });
+                    if (title.startsWith("#")) {
+                        String display = ircCon.getNickName() + ": " + message;
+                        addNewTextView(display, linearLayout);
+                        String send = "privmsg " + title + " " + message;
+                        sendToServer(send, ircCon);
+                    }
+                    else {
+                        sendToServer(message, ircCon);
+                    }
+                    scrollDown(linearLayout, scrollView);
                 }
             }
         });
         return view;
     }
 
-    private void dump(IRCCon ircCon, LinearLayout linearLayout, HashMap channelMap) {
+    private void dump(IRCCon ircCon, LinearLayout linearLayout, HashMap channelMap, ScrollView scrollView) {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
@@ -95,6 +87,7 @@ public class ChannelFragment extends Fragment {
                             if (!response.matches("")) {
                                 addNewTextView(response, linearLayout);
                                 channelMap.put(title, "");
+                                scrollDown(linearLayout, scrollView);
                             }
                         }
                     }
@@ -117,4 +110,23 @@ public class ChannelFragment extends Fragment {
         this.title = title;
     }
 
+    public void sendToServer(String message, IRCCon ircCon) {
+        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                ircCon.write(message);
+                return null;
+            }
+        };
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void scrollDown(LinearLayout linearLayout, ScrollView scrollView) {
+        linearLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        });
+    }
 }
