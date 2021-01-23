@@ -237,7 +237,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
 
     private ArrayList<String> ChannelList = new ArrayList<>();
 
-    private void addTab(String title) {
+    public void addTab(String title) {
         ChannelFragment channelFragment = new ChannelFragment();
         channelFragment.setTitle(title);
         View view = channelFragment.getView();
@@ -246,6 +246,14 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         ChannelList.add(title);
         viewPager.setOffscreenPageLimit(ChannelList.size());
         viewPager.setCurrentItem(viewPagerAdapter.getCount() - 1);
+    }
+
+    public ViewPager getViewPager() {
+        return viewPager;
+    }
+
+    public ViewPagerAdapter getViewPagerAdapter() {
+        return viewPagerAdapter;
     }
 
     private void addChannel() {
@@ -402,16 +410,23 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                     public void onClick(View v) {
                         String new_nick = editNickname.getText().toString();
                         if (!new_nick.matches("")) {
-                            ircCon.setNickName(new_nick);
-                            AsyncTask<Void, Void, Void> nickname_task = new AsyncTask<Void, Void, Void>() {
-                                @Override
-                                protected Void doInBackground(Void... voids) {
-                                    ircCon.write("nick " + new_nick);
-                                    return null;
-                                }
-                            };
-                            nickname_task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                            dialog.dismiss();
+                            ChannelFragment cf = new ChannelFragment();
+                            if (cf.isSpecialCharacter(new_nick)) {
+                                Toast.makeText(MainScreenActivity.this, "Nickname cant contain special characters", Toast.LENGTH_SHORT).show();
+                                editNickname.getText().clear();
+                            } else {
+                                AsyncTask<Void, Void, Void> nickname_task = new AsyncTask<Void, Void, Void>() {
+                                    @Override
+                                    protected Void doInBackground(Void... voids) {
+                                        ircCon.write("nick " + new_nick);
+                                        return null;
+                                    }
+                                };
+                                nickname_task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                dialog.dismiss();
+                                ircCon.setNickName(new_nick);
+                            }
+
                         } else {
                             Toast.makeText(MainScreenActivity.this, "Please enter a nickname.", Toast.LENGTH_SHORT).show();
                         }
@@ -422,13 +437,31 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
 
             case R.id.add_channel: {
                 addChannel();
+                return true;
+            }
+
+            case R.id.leave: {
+                HashMap channelMap = ircCon.getChannelMap();
+                int currentFrag = viewPager.getCurrentItem();
+                if (currentFrag == 0) {
+                    Toast.makeText(this, "Cannot exit this channel.", Toast.LENGTH_SHORT).show();
+                } else {
+                    channelMap.remove(String.valueOf(viewPagerAdapter.getPageTitle(currentFrag)));
+                    viewPagerAdapter.removeFrag(currentFrag);
+                    viewPagerAdapter.notifyDataSetChanged();
+                    viewPager.setCurrentItem(currentFrag - 1);
+                    Toast.makeText(MainScreenActivity.this, "Left " + viewPagerAdapter.getCount(), Toast.LENGTH_SHORT).show();
+                }
             }
 
             default: {
                 super.onOptionsItemSelected(item);
             }
         }
-        return super.onOptionsItemSelected(item);
+        return super.
+
+                onOptionsItemSelected(item);
+
     }
 
 

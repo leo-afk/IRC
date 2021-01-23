@@ -10,7 +10,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +22,16 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import vn.edu.usth.ircclient.Activities.MainScreenActivity;
+import vn.edu.usth.ircclient.Adapter.ViewPagerAdapter;
 import vn.edu.usth.ircclient.Classes.IRCCon;
 import vn.edu.usth.ircclient.R;
 
@@ -64,6 +70,62 @@ public class ChannelFragment extends Fragment {
                         addNewTextView(display, linearLayout);
                         String send = "privmsg " + title + " :" + message;
                         sendToServer(send, ircCon);
+                    } else if (message.substring(0, 4).equalsIgnoreCase("nick")) {
+                        sendToServer(message, ircCon);
+                        String nickname = message.split(" ")[1];
+                        if (isSpecialCharacter(nickname)) {
+                            sendToServer(message, ircCon);
+                        } else {
+                            sendToServer(message, ircCon);
+                            ircCon.setNickName(nickname);
+                            Toast.makeText(activity, "Nickname changed to " + nickname, Toast.LENGTH_SHORT).show();
+                        }
+                    } else if (message.substring(0, 4).equalsIgnoreCase("join")) {
+                        String channelname = message.split(" ")[1];
+                        if (channelname.startsWith("#") && !channelname.split("#")[1].contains(" ")) {
+                            ViewPager viewPager = activity.getViewPager();
+                            ViewPagerAdapter viewPagerAdapter = activity.getViewPagerAdapter();
+                            HashMap channelMap = ircCon.getChannelMap();
+                            if (channelMap.containsKey(channelname)) {
+                                int position = 0;
+                                for (int i = 0; i < viewPagerAdapter.getCount(); i++) {
+                                    if (String.valueOf(viewPagerAdapter.getPageTitle(i)).matches(channelname)) {
+                                        position = i;
+                                    }
+                                }
+                                viewPager.setCurrentItem(position);
+                                Toast.makeText(activity, "Joined " + channelname, Toast.LENGTH_SHORT).show();
+                            } else {
+                                activity.addTab(channelname);
+                                sendToServer(message, ircCon);
+                            }
+                        } else {
+                            sendToServer(message, ircCon);
+                        }
+                    } else if (message.substring(0, 4).equalsIgnoreCase("part")) {
+                        String channelname = message.split(" ")[1];
+                        if (channelname.startsWith("#") && !channelname.split("#")[1].contains(" ")) {
+                            ViewPager viewPager = activity.getViewPager();
+                            ViewPagerAdapter viewPagerAdapter = activity.getViewPagerAdapter();
+                            HashMap channelMap = ircCon.getChannelMap();
+                            if (channelMap.containsKey(channelname)) {
+                                int position = 0;
+                                for (int i = 0; i < viewPagerAdapter.getCount(); i++) {
+                                    if (String.valueOf(viewPagerAdapter.getPageTitle(i)).matches(channelname)) {
+                                        position = i;
+                                    }
+                                }
+                                viewPagerAdapter.removeFrag(position);
+                                viewPagerAdapter.notifyDataSetChanged();
+                                sendToServer(message, ircCon);
+                                channelMap.remove(channelname);
+                                Toast.makeText(activity, "Left " + channelname, Toast.LENGTH_SHORT).show();
+                            } else {
+                                sendToServer(message, ircCon);
+                            }
+                        } else {
+                            sendToServer(message, ircCon);
+                        }
                     } else {
                         sendToServer(message, ircCon);
                     }
@@ -72,6 +134,13 @@ public class ChannelFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    public Boolean isSpecialCharacter(String s) {
+        Pattern p = Pattern.compile("[^A-Za-z0-9]");
+        Matcher m = p.matcher(s);
+        boolean b = m.find();
+        return b;
     }
 
     private void dump(IRCCon ircCon, LinearLayout linearLayout, HashMap channelMap, ScrollView scrollView) {

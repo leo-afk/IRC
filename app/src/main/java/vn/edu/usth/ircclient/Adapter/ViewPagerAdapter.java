@@ -1,10 +1,13 @@
 package vn.edu.usth.ircclient.Adapter;
 
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +37,20 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         titleList.add(title);
     }
 
+    public void removeFrag(int position) {
+        fragmentList.remove(position);
+        titleList.remove(position);
+    }
+
+
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
         return titleList.get(position);
+    }
+
+    @Override
+    public int getItemPosition(@NonNull Object object) {
+        return super.getItemPosition(object);
     }
 }
