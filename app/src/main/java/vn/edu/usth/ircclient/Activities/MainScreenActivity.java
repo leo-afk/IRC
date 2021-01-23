@@ -41,6 +41,7 @@ import java.net.Socket;
 import java.nio.channels.Channel;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -201,6 +202,24 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         dialog.show();
     }
 
+    public void checkdm() {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (ircCon.getDm()) {
+                            addTab(ircCon.getDmUser());
+                            ircCon.setDm(false);
+                        }
+                    }
+                });
+
+            }
+        }, 0, 1000);
+    }
+
     public void connectServer(String host) {
         AsyncTask<Void, Void, Void> connect_task = new AsyncTask<Void, Void, Void>() {
             @Override
@@ -240,6 +259,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                HashMap channelMap = ircCon.getChannelMap();
                 String channelTitle = editChannel.getText().toString();
                 if (channelTitle.matches("")) {
                     Toast.makeText(getApplicationContext(), "Please enter a channel", Toast.LENGTH_SHORT).show();
@@ -247,6 +267,17 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                     Toast.makeText(MainScreenActivity.this, "Channel name must start with #", Toast.LENGTH_SHORT).show();
                 } else if (channelTitle.contains(" ")) {
                     Toast.makeText(MainScreenActivity.this, "Channel name must not have spaces", Toast.LENGTH_SHORT).show();
+                } else if (channelMap.containsKey(channelTitle)) {
+                    int position = 0;
+                    for (int i = 0; i < viewPagerAdapter.getCount(); i++) {
+                        Log.i("pagetitle", String.valueOf(viewPagerAdapter.getPageTitle(i)));
+                        if (String.valueOf(viewPagerAdapter.getPageTitle(i)).matches(channelTitle)) {
+                            position = i;
+                        }
+                    }
+                    viewPager.setCurrentItem(position);
+                    dialog.dismiss();
+                    Toast.makeText(MainScreenActivity.this, "Joined " + channelTitle, Toast.LENGTH_SHORT).show();
                 } else {
                     addTab(channelTitle);
                     AsyncTask<Void, Void, Void> channel_task = new AsyncTask<Void, Void, Void>() {
@@ -303,7 +334,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                     };
                     init_account.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     dialog.dismiss();
-
+                    checkdm();
                 } else {
                     Toast.makeText(getApplicationContext(), "Please fill all the fields!", Toast.LENGTH_SHORT).show();
                 }
@@ -316,6 +347,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                checkdm();
             }
         });
     }

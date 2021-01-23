@@ -3,6 +3,8 @@ package vn.edu.usth.ircclient.Classes;
 import android.util.Log;
 import android.widget.TextView;
 
+import androidx.viewpager.widget.ViewPager;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -10,9 +12,15 @@ import java.nio.channels.Channel;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import vn.edu.usth.ircclient.Activities.MainScreenActivity;
+
+import static android.app.PendingIntent.getActivity;
+import static java.security.AccessController.getContext;
+
 public class IRCCon {
     private PrintWriter out;
-    private Boolean update = true;
+    private Boolean dm = false;
+    private String dmUser = "";
     private String nickName;
     private static HashMap<String, String> ChannelMap = new HashMap<>();
 
@@ -24,10 +32,22 @@ public class IRCCon {
 
         while (in.hasNext()) {
             String serverMessage = in.nextLine();
+            if (serverMessage.contains("PRIVMSG " + nickName)) {
+                String user = serverMessage.split(":")[1].split("!")[0];
+                String user_text = serverMessage.split(" ", 4)[3].split(":", 2)[1];
+                if (ChannelMap.containsKey(user)) {
+                    ChannelMap.put(user, ChannelMap.get(user) + user + ": " + user_text + "\n");
+                } else {
+                    dm = true;
+                    dmUser = user;
+                    ChannelMap.put(user, user + ": " + user_text + "\n");
+                }
+            }
+
             if (serverMessage.contains("PRIVMSG #")) {
                 Log.i("THIS", serverMessage);
                 String channelName = serverMessage.split(" ")[2];
-                String channelText = serverMessage.split(" ", 4)[3];
+                String channelText = serverMessage.split(" ", 4)[3].split(":")[1];
                 String user = serverMessage.split(":")[1].split("!")[0];
                 if (ChannelMap.containsKey(channelName)) {
                     ChannelMap.put(channelName, ChannelMap.get(channelName) + user + ": " + channelText + "\n");
@@ -92,4 +112,15 @@ public class IRCCon {
         return nickName;
     }
 
+    public Boolean getDm() {
+        return dm;
+    }
+
+    public void setDm(Boolean dm) {
+        this.dm = dm;
+    }
+
+    public String getDmUser() {
+        return dmUser;
+    }
 }

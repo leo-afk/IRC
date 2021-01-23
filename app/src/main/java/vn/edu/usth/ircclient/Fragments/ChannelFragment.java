@@ -59,13 +59,12 @@ public class ChannelFragment extends Fragment {
                 String message = editText.getText().toString();
                 editText.getText().clear();
                 if (!message.matches("")) {
-                    if (title.startsWith("#")) {
+                    if (!title.matches("Server")) {
                         String display = ircCon.getNickName() + ": " + message;
                         addNewTextView(display, linearLayout);
-                        String send = "privmsg " + title + " " + message;
+                        String send = "privmsg " + title + " :" + message;
                         sendToServer(send, ircCon);
-                    }
-                    else {
+                    } else {
                         sendToServer(message, ircCon);
                     }
                     scrollDown(linearLayout, scrollView);
