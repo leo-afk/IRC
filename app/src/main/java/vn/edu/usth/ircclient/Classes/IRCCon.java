@@ -13,6 +13,7 @@ import java.util.Scanner;
 public class IRCCon {
     private PrintWriter out;
     private Boolean update = true;
+    private String nickName;
     private static HashMap<String, String> ChannelMap = new HashMap<>();
 
     public void init(String host) throws IOException {
@@ -81,6 +82,14 @@ public class IRCCon {
             out.print(fullMessage + "\r\n");
             out.flush();
         }
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getNickName() {
+        return nickName;
     }
 
 }

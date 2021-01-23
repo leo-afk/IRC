@@ -291,6 +291,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                 String nickname = editNickname.getText().toString();
                 String realname = editRealname.getText().toString();
                 if (!username.matches("") && !nickname.matches("") && !realname.matches("")) {
+                    ircCon.setNickName(nickname);
                     AsyncTask<Void, Void, Void> init_account = new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... voids) {
@@ -369,6 +370,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                     public void onClick(View v) {
                         String new_nick = editNickname.getText().toString();
                         if (!new_nick.matches("")) {
+                            ircCon.setNickName(new_nick);
                             AsyncTask<Void, Void, Void> nickname_task = new AsyncTask<Void, Void, Void>() {
                                 @Override
                                 protected Void doInBackground(Void... voids) {

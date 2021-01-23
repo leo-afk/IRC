@@ -58,14 +58,14 @@ public class ChannelFragment extends Fragment {
             public void onClick(View v) {
                 String message = editText.getText().toString();
                 if (!message.matches("")) {
-                    /*MainScreenActivity activity = (MainScreenActivity) getActivity();
-                    IRCCon ircCon = activity.getIrcCon();*/
-                    addNewTextView(message, linearLayout);
+                    String display = ircCon.getNickName() + ": " + message;
+                    addNewTextView(display, linearLayout);
+                    String send = "privmsg " + title + " " + message;
                     editText.getText().clear();
                     AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... voids) {
-                            ircCon.write(message);
+                            ircCon.write(send);
                             return null;
                         }
                     };
