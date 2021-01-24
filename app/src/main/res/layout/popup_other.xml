@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
+
+    <TextView
+        android:id="@+id/other_server"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/popup_join_channel_padding_left"
+        android:paddingTop="@dimen/popup_join_channel_padding_top"
+        android:paddingRight="@dimen/popup_join_channel_padding_right"
+        android:text="Server information"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"></TextView>
+
+    <LinearLayout
+        android:id="@+id/linear_other"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/other_server"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:text="Host"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:paddingLeft="5dp"></TextView>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:text="Port"></TextView>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/host"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_marginRight="5dp"
+                android:hint="e.g. chat.freenode.net"></EditText>
+
+            <EditText
+                android:id="@+id/port"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/other_server"
+                android:textColor="@color/black"
+                android:hint="e.g. 6667"></EditText>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/join_server_other"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linear_other"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="?attr/selectableItemBackground"
+        android:padding="@dimen/popup_join_channel_button_padding"
+        android:text="@string/join"
+        android:textColor="@color/orange"
+        android:textSize="@dimen/popup_join_channel_button_text_size"
+        android:textStyle="bold"></TextView>
+
+    <TextView
+        android:id="@+id/cancel_join_server_other"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linear_other"
+        android:layout_toLeftOf="@+id/join_server_other"
+        android:background="?attr/selectableItemBackground"
+        android:padding="@dimen/popup_join_channel_button_padding"
+        android:text="@string/cancel"
+        android:textColor="@color/orange"
+        android:textSize="@dimen/popup_join_channel_button_text_size"
+        android:textStyle="bold"></TextView>
+</RelativeLayout>

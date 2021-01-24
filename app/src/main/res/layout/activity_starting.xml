@@ -91,8 +91,8 @@
                 android:textAllCaps="false"
                 android:text="@string/other"
                 android:backgroundTint="@color/white"
-                android:textColor="@color/black">
-            </Button>
+                android:textColor="@color/black"
+                android:id="@+id/other"></Button>
 
         </LinearLayout>
     </LinearLayout>

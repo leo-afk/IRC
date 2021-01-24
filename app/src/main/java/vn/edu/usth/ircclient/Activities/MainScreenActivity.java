@@ -136,6 +136,9 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             case "KottNet":
                 host = "alice.kottnet.net";
                 break;
+
+            default:
+                host = title;
         }
 
         connectServer(host);

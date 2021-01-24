@@ -2,12 +2,16 @@ package vn.edu.usth.ircclient.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import vn.edu.usth.ircclient.R;
 
@@ -17,6 +21,7 @@ public class StartingActivity extends AppCompatActivity {
     Button quakenet;
     Button undernet;
     Button kottnet;
+    Button other;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +36,7 @@ public class StartingActivity extends AppCompatActivity {
         quakenet = (Button) findViewById(R.id.quakenet_button);
         undernet = (Button) findViewById(R.id.undernet_button);
         kottnet = (Button) findViewById(R.id.kottnet_button);
+        other = (Button) findViewById(R.id.other);
     }
 
     private void setEvents() {
@@ -68,6 +74,40 @@ public class StartingActivity extends AppCompatActivity {
                 startMainScreen("KottNet");
             }
         });
+        other.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Dialog dialog = new Dialog(StartingActivity.this);
+                dialog.setContentView(R.layout.popup_other);
+
+                TextView cancel = (TextView) dialog.findViewById(R.id.cancel_join_server_other);
+                TextView join = (TextView) dialog.findViewById(R.id.join_server_other);
+                EditText host = (EditText) dialog.findViewById(R.id.host);
+                EditText port = (EditText) dialog.findViewById(R.id.port);
+
+                dialog.show();
+
+                join.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!host.getText().toString().matches("") && !port.getText().toString().matches("")) {
+                            String host_name = host.getText().toString();
+                            startMainScreen(host_name);
+                        } else {
+                            Toast.makeText(StartingActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
+
     }
 
     private void startMainScreen(String title) {
