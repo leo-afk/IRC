@@ -116,10 +116,10 @@ public class ChannelFragment extends Fragment {
                                             position = i;
                                         }
                                     }
+                                    sendToServer(message, ircCon);
                                     viewPagerAdapter.removeFrag(position);
                                     viewPagerAdapter.notifyDataSetChanged();
-                                    sendToServer(message, ircCon);
-                                    channelMap.remove(channelname);
+                                    ircCon.removeFromChannelMap(channelname);
                                     Toast.makeText(activity, "Left " + channelname, Toast.LENGTH_SHORT).show();
                                 } else {
                                     sendToServer(message, ircCon);
@@ -151,6 +151,9 @@ public class ChannelFragment extends Fragment {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
+                if (getActivity() == null) {
+                    return;
+                }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

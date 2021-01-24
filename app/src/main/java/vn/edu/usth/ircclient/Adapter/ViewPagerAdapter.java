@@ -45,12 +45,18 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Nullable
     @Override
-    public CharSequence getPageTitle(int position) {
+    public String getPageTitle(int position) {
         return titleList.get(position);
     }
 
     @Override
     public int getItemPosition(@NonNull Object object) {
-        return super.getItemPosition(object);
+        Fragment fragment = (Fragment) object;
+        for (int i = 0; i < getCount(); i++) {
+            if (fragment.equals(getItem(i))) {
+                return i;
+            }
+        }
+        return POSITION_NONE;
     }
 }

@@ -69,12 +69,14 @@ public class IRCCon {
             } else if (serverMessage.contains("PART #")) {
                 String channelName = serverMessage.split(" ")[2];
                 String user = serverMessage.split(":")[1].split("!")[0];
-                if (ChannelMap.containsKey(channelName)) {
-                    ChannelMap.put(channelName, ChannelMap.get(channelName) + user + " has left " + channelName + "\n");
-                    Log.i("User", ChannelMap.get(channelName));
-                } else {
-                    ChannelMap.put(channelName, user + " has left " + channelName + "\n");
-                    Log.i("User init", ChannelMap.get(channelName));
+                if (!user.matches(nickName)) {
+                    if (ChannelMap.containsKey(channelName)) {
+                        ChannelMap.put(channelName, ChannelMap.get(channelName) + user + " has left " + channelName + "\n");
+                        Log.i("User", ChannelMap.get(channelName));
+                    } else {
+                        ChannelMap.put(channelName, user + " has left " + channelName + "\n");
+                        Log.i("User init", ChannelMap.get(channelName));
+                    }
                 }
             } else if (serverMessage.startsWith("PING")) {
                 String pingContents = serverMessage.split(" ", 2)[1];
@@ -122,5 +124,9 @@ public class IRCCon {
 
     public String getDmUser() {
         return dmUser;
+    }
+
+    public void removeFromChannelMap(String key) {
+        ChannelMap.remove(key);
     }
 }

@@ -443,14 +443,22 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             case R.id.leave: {
                 HashMap channelMap = ircCon.getChannelMap();
                 int currentFrag = viewPager.getCurrentItem();
+                String currentFragTitle = viewPagerAdapter.getPageTitle(currentFrag);
                 if (currentFrag == 0) {
                     Toast.makeText(this, "Cannot exit this channel.", Toast.LENGTH_SHORT).show();
                 } else {
-                    channelMap.remove(String.valueOf(viewPagerAdapter.getPageTitle(currentFrag)));
+                    AsyncTask<Void, Void, Void> part_task = new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            ircCon.write("part " + currentFragTitle);
+                            return null;
+                        }
+                    };
+                    part_task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    ircCon.removeFromChannelMap(currentFragTitle);
                     viewPagerAdapter.removeFrag(currentFrag);
                     viewPagerAdapter.notifyDataSetChanged();
                     viewPager.setCurrentItem(currentFrag - 1);
-                    Toast.makeText(MainScreenActivity.this, "Left " + viewPagerAdapter.getCount(), Toast.LENGTH_SHORT).show();
                 }
             }
 
