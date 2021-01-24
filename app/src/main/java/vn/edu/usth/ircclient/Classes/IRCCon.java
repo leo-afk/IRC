@@ -37,11 +37,11 @@ public class IRCCon {
                 String user = serverMessage.split(":")[1].split("!")[0];
                 String user_text = serverMessage.split(" ", 4)[3].split(":", 2)[1];
                 if (ChannelMap.containsKey(user)) {
-                    ChannelMap.put(user, ChannelMap.get(user) + user + ": " + user_text + "\n");
+                    ChannelMap.put(user, ChannelMap.get(user) + user + ": " + user_text);
                 } else {
                     dm = true;
                     dmUser = user;
-                    ChannelMap.put(user, user + ": " + user_text + "\n");
+                    ChannelMap.put(user, user + ": " + user_text);
                 }
             }
 
@@ -51,11 +51,11 @@ public class IRCCon {
                 String channelText = serverMessage.split(" ", 4)[3].split(":")[1];
                 String user = serverMessage.split(":")[1].split("!")[0];
                 if (ChannelMap.containsKey(channelName)) {
-                    ChannelMap.put(channelName, ChannelMap.get(channelName) + user + ": " + channelText + "\n");
+                    ChannelMap.put(channelName, ChannelMap.get(channelName) + user + ": " + channelText);
                     Log.i(channelName, ChannelMap.get(channelName));
                 } else {
                     ChannelMap.put(channelName, user + ": " + channelText);
-                    Log.i(channelName + "init", ChannelMap.get(channelName) + "\n");
+                    Log.i(channelName + "init", ChannelMap.get(channelName));
                 }
             } else if (serverMessage.contains("JOIN #")) {
                 String channelName = serverMessage.split(" ")[2];
