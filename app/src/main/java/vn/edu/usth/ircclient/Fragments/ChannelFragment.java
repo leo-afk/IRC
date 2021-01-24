@@ -127,6 +127,9 @@ public class ChannelFragment extends Fragment {
                             } else {
                                 sendToServer(message, ircCon);
                             }
+                        } else if (message.equalsIgnoreCase("quit")) {
+                            sendToServer(message, ircCon);
+                            activity.finish();
                         } else {
                             sendToServer(message, ircCon);
                         }
