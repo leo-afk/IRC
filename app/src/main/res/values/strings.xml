@@ -32,6 +32,14 @@
 
     <string name="drawer_open">Open Navigation Drawer</string>
     <string name="drawer_close">Close Navigation Drawer</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="help">Help</string>
+    <string name="quit">Quit</string>
+    <string name="help_join_channel"><![CDATA[join <channel>]]></string>
+    <string name="nick_newnick"><![CDATA[nick <newnick>]]></string>
+    <string name="part_channel"><![CDATA[part <channel>]]></string>
+    <string name="privmsg_user_message"><![CDATA[privmsg <user> :<message>]]></string>
+    <string-array name="list">
+        <item>Help</item>
+        <item>Quit</item>
+    </string-array>
 </resources>

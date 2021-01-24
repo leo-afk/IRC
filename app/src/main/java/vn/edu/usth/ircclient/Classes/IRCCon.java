@@ -22,6 +22,7 @@ public class IRCCon {
     private Boolean dm = false;
     private String dmUser = "";
     private String nickName;
+    private Boolean checkNick = false;
     private static HashMap<String, String> ChannelMap = new HashMap<>();
 
     public void init(String host) throws IOException {
@@ -108,6 +109,7 @@ public class IRCCon {
 
     public void setNickName(String nickName) {
         this.nickName = nickName;
+        checkNick = true;
     }
 
     public String getNickName() {
@@ -128,5 +130,13 @@ public class IRCCon {
 
     public void removeFromChannelMap(String key) {
         ChannelMap.remove(key);
+    }
+
+    public Boolean getCheckNick() {
+        return checkNick;
+    }
+
+    public void setCheckNick(Boolean checkNick) {
+        this.checkNick = checkNick;
     }
 }

@@ -63,9 +63,8 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
     private ActionBarDrawerToggle drawerListener;
     private ServerAdapter serverAdapter;
     private ViewPagerAdapter viewPagerAdapter;
-    private ChannelFragment channelFragment;
     private IRCCon ircCon = new IRCCon();
-//    ArrayList<IRCCon> Connections = new ArrayList<>();
+    private String host = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,12 +76,6 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         LayoutInflater inflater = getLayoutInflater();
         ViewGroup header = (ViewGroup) inflater.inflate(R.layout.add_server_header, listView, false);
         listView.addHeaderView(header, null, false);
-        header.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addServer();
-            }
-        });
 
 
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -95,6 +88,8 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         serverAdapter = new ServerAdapter(this, servers);
         listView.setAdapter(serverAdapter);
         listView.setOnItemClickListener(this);
+        serverAdapter.add_server_row("Help");
+        serverAdapter.add_server_row("Quit");
 
 
         drawerListener = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
@@ -121,10 +116,9 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
     private void createFirstPage() {
         Bundle extras = getIntent().getExtras();
         String title = extras.getString("title");
-        serverAdapter.add_server_row(title);
         addTab("Server");
 
-        String host = null;
+
         switch (title) {
             case "QuakeNet":
                 host = "cymru.us.quakenet.org";
@@ -148,58 +142,25 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
         enterAccount(ircCon);
     }
 
-    private void addServer() {
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.popup_add_server);
 
-        TextView freenode = (TextView) dialog.findViewById(R.id.freenode_popup);
-        TextView epiknet = (TextView) dialog.findViewById(R.id.epiknet_popup);
-        TextView quakenet = (TextView) dialog.findViewById(R.id.quakenet_popup);
-        TextView undernet = (TextView) dialog.findViewById(R.id.undernet_popup);
-        TextView kottnet = (TextView) dialog.findViewById(R.id.kottnet_popup);
-
-
-        freenode.setOnClickListener(new View.OnClickListener() {
+    public void checkNick() {
+        TextView tv = findViewById(R.id.nickname_header);
+        tv.setText("No nick associated.\n\nServer name: " + host);
+        new Timer().schedule(new TimerTask() {
             @Override
-            public void onClick(View v) {
-                serverAdapter.add_server_row("freenode");
-                dialog.dismiss();
-            }
-        });
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (ircCon.getCheckNick()) {
+                            tv.setText("@" + ircCon.getNickName() + "\n\nServer name: " + host);
+                            ircCon.setCheckNick(false);
+                        }
+                    }
+                });
 
-        epiknet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                serverAdapter.add_server_row("EpiKnet");
-                dialog.dismiss();
             }
-        });
-
-        quakenet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                serverAdapter.add_server_row("QuakeNet");
-                dialog.dismiss();
-            }
-        });
-
-        undernet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                serverAdapter.add_server_row("Undernet");
-                dialog.dismiss();
-            }
-        });
-
-        kottnet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                serverAdapter.add_server_row("kottnet");
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
+        }, 0, 1000);
     }
 
     public void checkdm() {
@@ -343,6 +304,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                     init_account.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     dialog.dismiss();
                     checkdm();
+                    checkNick();
                 } else {
                     Toast.makeText(getApplicationContext(), "Please fill all the fields!", Toast.LENGTH_SHORT).show();
                 }
@@ -356,6 +318,7 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
             public void onClick(View v) {
                 dialog.dismiss();
                 checkdm();
+                checkNick();
             }
         });
     }
@@ -466,28 +429,52 @@ public class MainScreenActivity extends AppCompatActivity implements AdapterView
                 super.onOptionsItemSelected(item);
             }
         }
-        return super.
-
-                onOptionsItemSelected(item);
-
+        return super.onOptionsItemSelected(item);
     }
 
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         position -= listView.getHeaderViewsCount();
-        Toast.makeText(this, servers.get(position) + " was selected", Toast.LENGTH_LONG).show();
         selectItem(position);
+        if (position == 0) {
+            Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.popup_help);
+            TextView gotit = (TextView) dialog.findViewById(R.id.gotit);
+            dialog.show();
+            gotit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+        } else {
+            AsyncTask<Void, Void, Void> quit_task = new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    ircCon.write("quit");
+                    return null;
+                }
+            };
+            quit_task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            finish();
+        }
     }
 
-    public void setTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
 
     public void selectItem(int position) {
         listView.setItemChecked(position, true);
-        String title = (String) servers.get(position);
-        setTitle(title);
     }
 
+    @Override
+    public void onBackPressed() {
+        AsyncTask<Void, Void, Void> quit_task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                ircCon.write("quit");
+                return null;
+            }
+        };
+        super.onBackPressed();
+    }
 }

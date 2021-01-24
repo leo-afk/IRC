@@ -54,13 +54,6 @@ public class ServerAdapter extends BaseAdapter {
             row = convertView;
         }
         TextView titleTextView = (TextView) row.findViewById(R.id.custom_tv);
-        ImageView exit_server = (ImageView) row.findViewById(R.id.ic_exit);
-        exit_server.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                remove_server_row(position);
-            }
-        });
         titleTextView.setText(searchArrayList.get(position));
 
         return row;
